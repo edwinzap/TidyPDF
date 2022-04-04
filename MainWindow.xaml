@@ -13,11 +13,11 @@
         </Grid.ColumnDefinitions>
         <ListBox Name="lbFiles" Grid.Column="0"
                  SelectionChanged="OnListBoxSelectionChanged"
-                 KeyDown="OnKeyDown">
+                 KeyDown="ListBox_OnKeyDown">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>
-                        <TextBox Text="{Binding Name}" Visibility="{Binding IsEditing, Converter={StaticResource TrueToVisibleConverter}}" />
+                        <TextBox LostFocus="TextBox_LostFocus" Text="{Binding Name}" Visibility="{Binding IsEditing, Converter={StaticResource TrueToVisibleConverter}}" />
                         <TextBlock Text="{Binding Name}" Visibility="{Binding IsEditing, Converter={StaticResource FalseToVisibleConverter}}" />
                     </Grid>
                 </DataTemplate>
@@ -32,8 +32,7 @@
               />
         <Grid Grid.Column="2">
             <WebBrowser
-                Name="webViewer"
-                Source="E:\SynologyDrive\Chants chrétiens\#A trier\Goutez la parole.pdf" />
+                Name="webViewer"/>
         </Grid>
     </Grid>
 </Window>

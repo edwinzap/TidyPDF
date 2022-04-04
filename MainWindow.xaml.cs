@@ -13,24 +13,18 @@ namespace TidyPDF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const string _path = @"E:\Chants chrétiens\#A trier\Chants chrétiens";
+        private readonly FileHelper _fileHelper;
 
         public MainWindow()
         {
             InitializeComponent();
+            _fileHelper = new FileHelper();
             GetFiles();
         }
 
         private void GetFiles()
         {
-            var files = Directory.GetFiles(_path)
-                .Select(path => new PdfFile
-                {
-                    Name = Path.GetFileNameWithoutExtension(path),
-                    Path = path
-                })
-                .ToList();
-
+            var files = _fileHelper.GetFiles();
             lbFiles.ItemsSource = files;
         }
 
@@ -38,10 +32,15 @@ namespace TidyPDF
         {
             var item = (ListBox)sender;
             var file = (PdfFile)item.SelectedItem;
-            //webViewer.Source = new Uri(file.Path);
+            if (file == null)
+                return;
+
+            var tempFilePath = _fileHelper.CreateTempFile(file.Path);
+            if (tempFilePath != null)
+                webViewer.Source = new Uri(tempFilePath);
         }
 
-        private void OnKeyDown(object sender, KeyEventArgs e)
+        private void ListBox_OnKeyDown(object sender, KeyEventArgs e)
         {
             var item = (ListBox)sender;
             var file = (PdfFile)item.SelectedItem;
@@ -52,29 +51,41 @@ namespace TidyPDF
             }
             else if (e.Key == Key.Enter && file.IsEditing)
             {
-                RenameFile(file.Path, file.Name);
+                _fileHelper.RenameFile(file.Path, file.Name);
                 file.IsEditing = false;
                 GetFiles();
             }
             else if (e.Key == Key.NumPad0)
             {
                 Debug.WriteLine("Déplacer dans 'Excellent'");
-                MoveFile()
+                MoveFile(file.Path, Quality.Excellent);
             }
             else if (e.Key == Key.NumPad1)
             {
                 Debug.WriteLine("Déplacer dans 'Bon'");
+                MoveFile(file.Path, Quality.Good);
             }
             else if (e.Key == Key.NumPad2)
             {
                 Debug.WriteLine("Déplacer dans 'Moyen'");
+                MoveFile(file.Path, Quality.Average);
             }
             else if (e.Key == Key.NumPad3)
             {
                 Debug.WriteLine("Déplacer dans 'Mauvais'");
+                MoveFile(file.Path, Quality.Bad);
             }
         }
 
-        
+        private void MoveFile(string filePath, Quality quality)
+        {
+            _fileHelper.MoveFile(filePath, quality);
+            GetFiles();
+        }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
