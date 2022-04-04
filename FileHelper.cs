@@ -77,7 +77,7 @@ namespace TidyPDF
                 return;
 
             var extension = Path.GetExtension(oldPath);
-            newName += "." + extension;
+            newName += extension;
 
             var relativePath = Path.GetDirectoryName(oldPath);
             var newPath = Path.Combine(relativePath!, newName);

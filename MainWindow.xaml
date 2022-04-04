@@ -11,27 +11,48 @@
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <ListBox Name="lbFiles" Grid.Column="0"
-                 SelectionChanged="OnListBoxSelectionChanged"
-                 KeyDown="ListBox_OnKeyDown">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <TextBox LostFocus="TextBox_LostFocus" Text="{Binding Name}" Visibility="{Binding IsEditing, Converter={StaticResource TrueToVisibleConverter}}" />
+        
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <Grid Grid.Row="0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox TabIndex="1" Grid.Column="0" Name="renameFileTxtBox" KeyDown="renameFileTxtBox_KeyDown"/>
+                    <Button TabIndex="2" Grid.Column="1" Name="normalizeFileBtn" Click="normalizeFileBtn_Click">Normalize</Button>
+                    <Button TabIndex="3" Grid.Column="2" Name="editFileBtn" Click="renameFileBtn_Click">Rename</Button>
+                </Grid>
+            </Grid>
+            
+            <ListBox TabIndex="4" IsSynchronizedWithCurrentItem="True" Name="lbFiles" Grid.Row="1"
+                 SelectionChanged="lbFiles_SelectionChanged"
+                 KeyDown="lbFiles_KeyDown">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
                         <TextBlock Text="{Binding Name}" Visibility="{Binding IsEditing, Converter={StaticResource FalseToVisibleConverter}}" />
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        
         <GridSplitter Grid.Column="1"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Stretch"
-              Background="LightGray" 
-              ShowsPreview="True"
-              Width="5"
-              />
+                      IsTabStop="False"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Stretch"
+                      Background="LightGray" 
+                      ShowsPreview="True"
+                      Width="5"/>
+        
         <Grid Grid.Column="2">
             <WebBrowser
+                Focusable="False"
                 Name="webViewer"/>
         </Grid>
     </Grid>

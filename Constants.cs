@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace TidyPDF
 {
@@ -10,5 +6,14 @@ namespace TidyPDF
     {
         public static string WorkingDirectoryPath { get; } = @"C:\Users\MFORGET\Documents\Miguel\Test";
         public static string TargetDirectoryPath { get; } = @"C:\Users\MFORGET\Documents\Miguel\Test";
+
+        public static Dictionary<string, string> ReplaceWords { get; } = new Dictionary<string, string>()
+        {
+            {"jésus", "Jésus"},
+            {"jesus", "Jesus"},
+            {"dieu", "Dieu"},
+            {"god", "God"},
+            {"il ", "Il "}
+        };
     }
 }

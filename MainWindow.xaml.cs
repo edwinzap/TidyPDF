@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -28,32 +27,92 @@ namespace TidyPDF
             lbFiles.ItemsSource = files;
         }
 
-        private void OnListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void MoveFile(string filePath, Quality quality)
+        {
+            _fileHelper.MoveFile(filePath, quality);
+            GetFiles();
+        }
+
+        private void NormalizeFileName()
+        {
+            var fileName = renameFileTxtBox.Text;
+            fileName = char.ToUpper(fileName[0]) + fileName.Substring(1).ToLower();
+            fileName = fileName.Replace("_", " ");
+
+            foreach (var item in Constants.ReplaceWords)
+            {
+                fileName = fileName.Replace(item.Key, item.Value);
+            }
+
+            var regex = new Regex(@"[\[\(]?([a-zA-Z]{1,2}) ?([0-9]+)[\]\)]?");
+            if (regex.IsMatch(fileName))
+            {
+                var match = regex.Match(fileName);
+                var letters = match.Groups[1].Value.ToUpper();
+                var numbers = match.Groups[2].Value;
+                var newValue = $"[{letters}{numbers}]";
+                fileName = regex.Replace(fileName, newValue);
+            }
+            renameFileTxtBox.Text = fileName;
+        }
+
+        private void RenameFile()
+        {
+            var newName = renameFileTxtBox.Text;
+            if (string.IsNullOrEmpty(newName))
+                return;
+
+            var file = (PdfFile)lbFiles.SelectedItem;
+            if (file == null)
+                return;
+
+            _fileHelper.RenameFile(file.Path, newName);
+            GetFiles();
+        }
+
+        private void renameFileTxtBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                RenameFile();
+                lbFiles.Focus();
+            }
+            else if (e.Key == Key.Escape)
+            {
+                var file = (PdfFile)lbFiles.SelectedItem;
+                if (file == null)
+                    return;
+                lbFiles.Focus();
+            }
+            else if(e.Key == Key.F1)
+            {
+                NormalizeFileName();
+            }
+        }
+
+        private void lbFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var item = (ListBox)sender;
             var file = (PdfFile)item.SelectedItem;
             if (file == null)
                 return;
 
+            renameFileTxtBox.Text = file.Name;
+
             var tempFilePath = _fileHelper.CreateTempFile(file.Path);
             if (tempFilePath != null)
                 webViewer.Source = new Uri(tempFilePath);
         }
 
-        private void ListBox_OnKeyDown(object sender, KeyEventArgs e)
+        private void lbFiles_KeyDown(object sender, KeyEventArgs e)
         {
             var item = (ListBox)sender;
             var file = (PdfFile)item.SelectedItem;
 
-            if (e.Key == Key.F2) 
+            if (e.Key == Key.F2)
             {
-                file.IsEditing = true;
-            }
-            else if (e.Key == Key.Enter && file.IsEditing)
-            {
-                _fileHelper.RenameFile(file.Path, file.Name);
-                file.IsEditing = false;
-                GetFiles();
+                renameFileTxtBox.Focus();
+                renameFileTxtBox.SelectAll();
             }
             else if (e.Key == Key.NumPad0)
             {
@@ -77,15 +136,14 @@ namespace TidyPDF
             }
         }
 
-        private void MoveFile(string filePath, Quality quality)
+        private void renameFileBtn_Click(object sender, RoutedEventArgs e)
         {
-            _fileHelper.MoveFile(filePath, quality);
-            GetFiles();
+            RenameFile();
         }
 
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void normalizeFileBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            NormalizeFileName();
         }
     }
 }
