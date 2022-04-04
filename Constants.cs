@@ -13,7 +13,6 @@ namespace TidyPDF
             {"jesus", "Jesus"},
             {"dieu", "Dieu"},
             {"god", "God"},
-            {"il ", "Il "}
         };
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -36,39 +35,21 @@ namespace TidyPDF
         private void NormalizeFileName()
         {
             var fileName = renameFileTxtBox.Text;
-            fileName = char.ToUpper(fileName[0]) + fileName.Substring(1).ToLower();
-            fileName = fileName.Replace("_", " ");
-
-            foreach (var item in Constants.ReplaceWords)
-            {
-                fileName = fileName.Replace(item.Key, item.Value);
-            }
-
-            var regex = new Regex(@"[\[\(]?([a-zA-Z]{1,2}) ?([0-9]+)[\]\)]?");
-            if (regex.IsMatch(fileName))
-            {
-                var match = regex.Match(fileName);
-                var letters = match.Groups[1].Value.ToUpper();
-                var numbers = match.Groups[2].Value;
-                var newValue = $"[{letters}{numbers}]";
-                fileName = regex.Replace(fileName, newValue);
-            }
+            _fileHelper.NormalizeFileName(fileName);
             renameFileTxtBox.Text = fileName;
         }
 
         private void RenameFile()
         {
             var newName = renameFileTxtBox.Text;
-            if (string.IsNullOrEmpty(newName))
-                return;
-
             var file = (PdfFile)lbFiles.SelectedItem;
-            if (file == null)
-                return;
-
-            _fileHelper.RenameFile(file.Path, newName);
-            GetFiles();
+            if (_fileHelper.TryRenameFile(file?.Path, newName))
+            {
+                GetFiles();
+            }
         }
+
+        #region Events
 
         private void renameFileTxtBox_KeyDown(object sender, KeyEventArgs e)
         {
@@ -84,7 +65,7 @@ namespace TidyPDF
                     return;
                 lbFiles.Focus();
             }
-            else if(e.Key == Key.F1)
+            else if (e.Key == Key.F1)
             {
                 NormalizeFileName();
             }
@@ -145,5 +126,7 @@ namespace TidyPDF
         {
             NormalizeFileName();
         }
+
+        #endregion Events
     }
 }

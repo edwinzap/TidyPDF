@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static TidyPDF.MainWindow;
 
@@ -65,16 +66,16 @@ namespace TidyPDF
             return newFilePath;
         }
 
-        public void RenameFile(string? oldPath, string? newName)
+        public bool TryRenameFile(string? oldPath, string? newName)
         {
             if (!File.Exists(oldPath))
-                return;
+                return false;
 
             if (string.IsNullOrEmpty(oldPath) || string.IsNullOrEmpty(newName))
-                return;
+                return false;
 
             if (newName.IndexOfAny(Path.GetInvalidFileNameChars()) > 0 && File.Exists(oldPath))
-                return;
+                return false;
 
             var extension = Path.GetExtension(oldPath);
             newName += extension;
@@ -82,6 +83,28 @@ namespace TidyPDF
             var relativePath = Path.GetDirectoryName(oldPath);
             var newPath = Path.Combine(relativePath!, newName);
             File.Move(oldPath, newPath);
+            return true;
+        }
+
+        public void NormalizeFileName(string fileName)
+        {
+            fileName = char.ToUpper(fileName[0]) + fileName.Substring(1).ToLower().Trim();
+            fileName = fileName.Replace("_", " ");
+
+            foreach (var item in Constants.ReplaceWords)
+            {
+                fileName = fileName.Replace(item.Key, item.Value);
+            }
+
+            var regex = new Regex(@"[\[\( ]+([a-zA-Z]{1,2}) ?([0-9]+)[\]\)]?");
+            if (regex.IsMatch(fileName))
+            {
+                var match = regex.Match(fileName);
+                var letters = match.Groups[1].Value.ToUpper();
+                var numbers = match.Groups[2].Value;
+                var newValue = $"[{letters}{numbers}]";
+                fileName = regex.Replace(fileName, newValue);
+            }
         }
     }
 }
