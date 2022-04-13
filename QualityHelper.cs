@@ -8,10 +8,10 @@ namespace TidyPDF
         {
             return (quality) switch
             {
-                Quality.Excellent => "0. Excellent",
-                Quality.Good => "1. Bon",
-                Quality.Average => "2. Moyen",
-                Quality.Bad => "3. Mauvais",
+                Quality.Excellent => "0 Excellent",
+                Quality.Good => "1 Bon",
+                Quality.Average => "2 Moyen",
+                Quality.Bad => "3 Mauvais",
                 _ => throw new NotImplementedException()
             };
         }

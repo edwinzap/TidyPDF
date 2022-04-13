@@ -35,7 +35,7 @@ namespace TidyPDF
         private void NormalizeFileName()
         {
             var fileName = renameFileTxtBox.Text;
-            _fileHelper.NormalizeFileName(fileName);
+            fileName = _fileHelper.NormalizeFileName(fileName);
             renameFileTxtBox.Text = fileName;
         }
 

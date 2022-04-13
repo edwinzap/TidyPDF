@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using static TidyPDF.MainWindow;
 
 namespace TidyPDF
@@ -31,7 +29,6 @@ namespace TidyPDF
             return files;
         }
 
-
         public void MoveFile(string filePath, Quality quality)
         {
             if (!File.Exists(filePath))
@@ -41,6 +38,12 @@ namespace TidyPDF
             var targetPath = Path.Combine(Constants.TargetDirectoryPath, directoryName);
             var fileName = Path.GetFileName(filePath);
             var targetFilePath = Path.Combine(targetPath, fileName);
+
+            int increment = 2;
+            while (File.Exists(targetFilePath))
+            {
+                targetFilePath = $"{fileName} ({increment++})";
+            }
             File.Move(filePath, targetFilePath);
         }
 
@@ -62,7 +65,7 @@ namespace TidyPDF
                 newFilePath = Path.Combine(relativePath, "temp1.pdf");
                 File.Copy(filePath, newFilePath, true);
             }
-            
+
             return newFilePath;
         }
 
@@ -78,15 +81,19 @@ namespace TidyPDF
                 return false;
 
             var extension = Path.GetExtension(oldPath);
-            newName += extension;
-
             var relativePath = Path.GetDirectoryName(oldPath);
-            var newPath = Path.Combine(relativePath!, newName);
+            var newPath = Path.Combine(relativePath!, newName) + extension;
+
+            int increment = 2;
+            while (File.Exists(newPath) && oldPath.ToLower() != newPath.ToLower())
+            {
+                newPath = Path.Combine(relativePath!, $"{newName} ({increment++})") + extension;
+            }
             File.Move(oldPath, newPath);
             return true;
         }
 
-        public void NormalizeFileName(string fileName)
+        public string NormalizeFileName(string fileName)
         {
             fileName = char.ToUpper(fileName[0]) + fileName.Substring(1).ToLower().Trim();
             fileName = fileName.Replace("_", " ");
@@ -96,15 +103,19 @@ namespace TidyPDF
                 fileName = fileName.Replace(item.Key, item.Value);
             }
 
-            var regex = new Regex(@"[\[\( ]+([a-zA-Z]{1,2}) ?([0-9]+)[\]\)]?");
-            if (regex.IsMatch(fileName))
+            var whiteSpacesRegex = new Regex(@"\s+");
+            fileName = whiteSpacesRegex.Replace(fileName, " ");
+
+            var numberRegex = new Regex(@"[\[\( ]+([a-zA-Z]{1,2}) ?([0-9]+(?:-[0-9]+){0,2})[\]\)]?");
+            if (numberRegex.IsMatch(fileName))
             {
-                var match = regex.Match(fileName);
+                var match = numberRegex.Match(fileName);
                 var letters = match.Groups[1].Value.ToUpper();
                 var numbers = match.Groups[2].Value;
-                var newValue = $"[{letters}{numbers}]";
-                fileName = regex.Replace(fileName, newValue);
+                var newValue = $" [{letters}{numbers}]";
+                fileName = numberRegex.Replace(fileName, newValue);
             }
+            return fileName;
         }
     }
 }
