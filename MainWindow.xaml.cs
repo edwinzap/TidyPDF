@@ -49,6 +49,12 @@ namespace TidyPDF
             }
         }
 
+        private void RemoveFile(string filePath)
+        {
+            _fileHelper.RemoveFile(filePath);
+            GetFiles();
+        }
+
         #region Events
 
         private void renameFileTxtBox_KeyDown(object sender, KeyEventArgs e)
@@ -114,6 +120,11 @@ namespace TidyPDF
             {
                 Debug.WriteLine("Déplacer dans 'Mauvais'");
                 MoveFile(file.Path, Quality.Bad);
+            }
+            else if(e.Key == Key.Delete)
+            {
+                Debug.WriteLine("Supprimer");
+                RemoveFile(file.Path);
             }
         }
 

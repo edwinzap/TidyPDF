@@ -47,6 +47,14 @@ namespace TidyPDF
             File.Move(filePath, targetFilePath);
         }
 
+        public void RemoveFile(string filePath)
+        {
+            if (!File.Exists(filePath))
+                return;
+
+            File.Delete(filePath);
+        }
+
         public string? CreateTempFile(string filePath)
         {
             if (!File.Exists(filePath))
@@ -95,12 +103,22 @@ namespace TidyPDF
 
         public string NormalizeFileName(string fileName)
         {
-            fileName = char.ToUpper(fileName[0]) + fileName.Substring(1).ToLower().Trim();
+            fileName = fileName.Trim();
+            fileName = fileName.ToLower();
             fileName = fileName.Replace("_", " ");
 
             foreach (var item in Constants.ReplaceWords)
             {
-                fileName = fileName.Replace(item.Key, item.Value);
+                fileName = fileName.Replace(item.Key, item.Value, StringComparison.CurrentCultureIgnoreCase);
+            }
+
+            foreach (var word in Constants.ProperCaseWords)
+            {
+                var newWord = word.ToArray();
+                int index = newWord[0] == ' ' ? 1 : 0;
+                newWord[index] = char.ToUpper(newWord[index]);
+
+                fileName = fileName.Replace(word!, string.Concat(newWord));
             }
 
             var whiteSpacesRegex = new Regex(@"\s+");
@@ -115,6 +133,7 @@ namespace TidyPDF
                 var newValue = $" [{letters}{numbers}]";
                 fileName = numberRegex.Replace(fileName, newValue);
             }
+            fileName = char.ToUpper(fileName[0]) + fileName[1..];
             return fileName;
         }
     }

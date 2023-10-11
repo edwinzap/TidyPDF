@@ -9,22 +9,24 @@ namespace TidyPDF
 
         public static Dictionary<string, string> ReplaceWords { get; } = new Dictionary<string, string>()
         {
-            {"jésus", "Jésus"},
             {"jesus", "Jésus"},
-            {"dieu", "Dieu"},
-            {"god", "God"},
-            {"seigneur", "Seigneur"},
-            {"marie", "Marie"},
             {"alleluia", "alléluia"},
-            {"noël", "Noël"},
             {"noel", "Noël"},
             {"paque", "Pâque"},
-            {"pâque", "Pâque"},
-            {"évangile", "Évangile"},
             {"evangile", "Évangile"},
-            {" père ", " Père "},
-            {" pere ", " Père "},
-            {" Pere ", " Père "},
+            {" pere", " Père"},
+            {"anamnese", "Anamnèse" },
+            {"esperance", "espérance" },
+            {"emmaus", "emmaüs" },
+            {"priere", "prière" },
+        };
+
+        public static List<string> ProperCaseWords { get; } = new List<string>()
+        {
+            "jésus", " dieu", "god", "marie", "seigneur",
+            "noël", "pâque", "évangile", "père", "sanctus",
+            "anamnèse", "kyrie", "agnus", "gloria","alléluia",
+            " st ", "saint ", "emmaüs", "messe", "esprit", "christ",
         };
     }
 }
