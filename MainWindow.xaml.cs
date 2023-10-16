@@ -57,6 +57,12 @@ namespace TidyPDF
 
         #region Events
 
+
+        private void refreshBtn_Click(object sender, RoutedEventArgs e)
+        {
+            GetFiles();
+        }
+
         private void renameFileTxtBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)

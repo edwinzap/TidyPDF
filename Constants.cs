@@ -19,6 +19,8 @@ namespace TidyPDF
             {"esperance", "espérance" },
             {"emmaus", "emmaüs" },
             {"priere", "prière" },
+            {"lumiere", "lumière" },
+            {" fete", " fête" },
         };
 
         public static List<string> ProperCaseWords { get; } = new List<string>()
@@ -27,6 +29,7 @@ namespace TidyPDF
             "noël", "pâque", "évangile", "père", "sanctus",
             "anamnèse", "kyrie", "agnus", "gloria","alléluia",
             " st ", "saint ", "emmaüs", "messe", "esprit", "christ",
+            "lord","emmanuel", "nazareth",
         };
     }
 }

@@ -24,10 +24,12 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="80"/>
                         <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="30"/>
                     </Grid.ColumnDefinitions>
                     <TextBox TabIndex="1" Grid.Column="0" Name="renameFileTxtBox" KeyDown="renameFileTxtBox_KeyDown"/>
                     <Button TabIndex="2" Grid.Column="1" Name="normalizeFileBtn" Click="normalizeFileBtn_Click">Normalize</Button>
                     <Button TabIndex="3" Grid.Column="2" Name="editFileBtn" Click="renameFileBtn_Click">Rename</Button>
+                    <Button TabIndex="4" Grid.Column="3" Name="refreshBtn" Click="refreshBtn_Click">🔄️</Button>
                 </Grid>
             </Grid>
             

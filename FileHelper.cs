@@ -25,6 +25,7 @@ namespace TidyPDF
                     Name = Path.GetFileNameWithoutExtension(path),
                     Path = path
                 })
+                .OrderBy(x => x.Name)
                 .ToList();
             return files;
         }
@@ -124,7 +125,7 @@ namespace TidyPDF
             var whiteSpacesRegex = new Regex(@"\s+");
             fileName = whiteSpacesRegex.Replace(fileName, " ");
 
-            var numberRegex = new Regex(@"[\[\( ]+([a-zA-Z]{1,2}) ?([0-9]+(?:-[0-9]+){0,2})[\]\)]?");
+            var numberRegex = new Regex(@"[\[\( ]+([a-zA-Z]{1,3}) ?([0-9]+(?:-[0-9]+){0,2})[\]\)]?");
             if (numberRegex.IsMatch(fileName))
             {
                 var match = numberRegex.Match(fileName);
