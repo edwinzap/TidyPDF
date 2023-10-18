@@ -104,6 +104,9 @@ namespace TidyPDF
 
         public string NormalizeFileName(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName))
+                return string.Empty;
+
             fileName = fileName.Trim();
             fileName = fileName.ToLower();
             fileName = fileName.Replace("_", " ");
