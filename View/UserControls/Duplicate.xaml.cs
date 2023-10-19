@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
@@ -55,9 +56,25 @@ namespace TidyPDF
         private void MoveDuplicateFile(string path, bool shouldRemove)
         {
             _fileHelper.MoveDuplicateFile(path, shouldRemove);
+            var item = lbFiles.SelectedItem as SimplePdfFile;
+            (lbFiles.ItemsSource as List<SimplePdfFile>).Remove(item);
+            lbFiles.Items.Refresh();
+        }
+
+        private void ShowFileInExplorer(string path)
+        {
+            if (!File.Exists(path))
+                return;
+
+            // combine the arguments together
+            // it doesn't matter if there is a space after ','
+            string argument = "/select, \"" + path + "\"";
+
+            Process.Start("explorer.exe", argument);
         }
 
         #region Events
+
         private void lbNames_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var item = (ListBox)sender;
@@ -74,8 +91,16 @@ namespace TidyPDF
             var item = (ListBox)sender;
             var file = (SimplePdfFile)item.SelectedItem;
 
-            if (file != null && !string.IsNullOrEmpty(file.Path))
-                webViewer.Source = new Uri(file.Path);
+            if(file?.Path != null)
+            {
+                var tempFilePath = _fileHelper.CreateTempFile(file.Path);
+                if (tempFilePath != null)
+                    webViewer.Source = new Uri(tempFilePath);
+            }
+            else
+            {
+                webViewer.Navigate((Uri?)null);
+            }
         }
 
         private void lbFiles_KeyDown(object sender, KeyEventArgs e)
@@ -83,14 +108,20 @@ namespace TidyPDF
             var item = (ListBox)sender;
             var file = (SimplePdfFile)item.SelectedItem;
 
-            if (e.Key == Key.Delete)
+            switch (e.Key)
             {
-                Debug.WriteLine("Supprimer");
-                MoveDuplicateFile(file.Path, true);
-            }
-            else if (e.Key == Key.NumPad0)
-            {
-                MoveDuplicateFile(file.Path, false);
+                case Key.Delete:
+                    Debug.WriteLine("Supprimer");
+                    MoveDuplicateFile(file.Path, true);
+                    break;
+
+                case Key.NumPad0:
+                    MoveDuplicateFile(file.Path, false);
+                    break;
+
+                case Key.Enter:
+                    ShowFileInExplorer(file.Path);
+                    break;
             }
         }
 
@@ -102,6 +133,6 @@ namespace TidyPDF
             }
         }
 
-        #endregion
+        #endregion Events
     }
 }
