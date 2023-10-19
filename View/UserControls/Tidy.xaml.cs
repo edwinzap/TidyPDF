@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using static TidyPDF.MainWindow;
+using static TidyPDF.Models.MainWindow;
 
 namespace TidyPDF
 {
@@ -23,7 +25,12 @@ namespace TidyPDF
 
         private void GetFiles()
         {
-            var files = _fileHelper.GetFiles();
+            var simpleFiles = _fileHelper.GetFiles();
+            var files = simpleFiles.Select(x => new PdfFile
+            {
+                Name = x.Name,
+                Path = x.Path,
+            });
             lbFiles.ItemsSource = files;
         }
 

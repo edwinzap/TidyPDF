@@ -6,6 +6,8 @@ namespace TidyPDF
     {
         public static string WorkingDirectoryPath { get; } = @"E:\SynologyDrive\Chants chrétiens\#A trier\Chants chrétiens";
         public static string TargetDirectoryPath { get; } = @"E:\SynologyDrive\Chants chrétiens\#A trier\Chants chrétiens";
+        public static string TrashDirectoryPath { get; } = @"E:\SynologyDrive\Chants chrétiens\#A trier\Trash";
+        public static string DuplicateDirectoryPath { get; } = @"E:\SynologyDrive\Chants chrétiens\#A trier\Duplicate";
 
         public static Dictionary<string, string> ReplaceWords { get; } = new Dictionary<string, string>()
         {

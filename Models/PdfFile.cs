@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace TidyPDF
+namespace TidyPDF.Models
 {
     public partial class MainWindow
     {

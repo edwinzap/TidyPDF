@@ -3,24 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static TidyPDF.MainWindow;
+using TidyPDF.Models;
 
 namespace TidyPDF
 {
     public class FileHelper
     {
-        private readonly QualityHelper _qualityHelper;
-
-        public FileHelper()
+        public List<SimplePdfFile> GetFiles(bool withSubFolders = false)
         {
-            _qualityHelper = new QualityHelper();
-        }
+            var searchOption = withSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            var directoryPath = withSubFolders ? Constants.TargetDirectoryPath : Constants.WorkingDirectoryPath;
 
-        public List<PdfFile> GetFiles()
-        {
-            var files = Directory.GetFiles(Constants.WorkingDirectoryPath)
-                .Where(x => Path.GetExtension(x) == ".pdf" && Path.GetFileNameWithoutExtension(x) != "temp")
-                .Select(path => new PdfFile
+            var allFiles = Directory.EnumerateFiles(directoryPath, "*.pdf", searchOption);
+            var files = allFiles
+                .Where(x => Path.GetFileNameWithoutExtension(x) != "temp")
+                .Select(path => new SimplePdfFile
                 {
                     Name = Path.GetFileNameWithoutExtension(path),
                     Path = path
@@ -30,12 +27,31 @@ namespace TidyPDF
             return files;
         }
 
+        public void MoveDuplicateFile(string filePath, bool shouldRemove)
+        {
+            if (!File.Exists(filePath))
+                return;
+
+            var directory = shouldRemove ? Constants.TrashDirectoryPath : Constants.DuplicateDirectoryPath;
+
+            var targetPath = Path.Combine(Constants.TargetDirectoryPath, directory);
+            var fileName = Path.GetFileName(filePath);
+            var targetFilePath = Path.Combine(targetPath, fileName);
+
+            int increment = 2;
+            while (File.Exists(targetFilePath))
+            {
+                targetFilePath = $"{fileName} ({increment++})";
+            }
+            File.Move(filePath, targetFilePath);
+        }
+
         public void MoveFile(string filePath, Quality quality)
         {
             if (!File.Exists(filePath))
                 return;
 
-            var directoryName = _qualityHelper.GetQualityDirectoryName(quality);
+            var directoryName = QualityHelper.GetQualityDirectoryName(quality);
             var targetPath = Path.Combine(Constants.TargetDirectoryPath, directoryName);
             var fileName = Path.GetFileName(filePath);
             var targetFilePath = Path.Combine(targetPath, fileName);

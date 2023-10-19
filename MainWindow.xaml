@@ -11,7 +11,7 @@
             <app:Tidy/>
         </TabItem>
         <TabItem Header="Supprimer les doublons">
-            
+            <app:Duplicate/>
         </TabItem>
     </TabControl>
 </Window>
